@@ -10,6 +10,7 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.github.piasy.tryopengl.R;
 
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class MyRenderer implements GLSurfaceView.Renderer {
+        static final boolean LOG = false;
+
         private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.vertex);
                 /*
                 "uniform mat4 uMVPMatrix;" +
@@ -159,12 +162,22 @@ public class MainActivity extends AppCompatActivity {
             mWidth = width;
             mHeight = height;
 
+            Log.v("shader", String.format("width=%d, h=%d", width, height));
+
             mProgram = GLES20.glCreateProgram();
             int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);
             int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);
             GLES20.glAttachShader(mProgram, vertexShader);
             GLES20.glAttachShader(mProgram, fragmentShader);
             GLES20.glLinkProgram(mProgram);
+
+
+            if (LOG) {
+                final int[] status = new int[1];
+                GLES20.glGetShaderiv(mProgram, GLES20.GL_LINK_STATUS, status, 0);
+                Log.v("shader", "Results of linking program:[" + status[0] + "]\n:"
+                        + GLES20.glGetProgramInfoLog(mProgram));
+            }
 
             mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
             mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "a_texCoord");
@@ -174,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             mTexNames = new int[1];
             GLES20.glGenTextures(1, mTexNames, 0);
 
-            Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.p_300px);
+            Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.lena);
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames[0]);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
@@ -217,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glDisableVertexAttribArray(mPositionHandle);
             GLES20.glDisableVertexAttribArray(mTexCoordHandle);
 
-            Utils.sendImage(mWidth, mHeight);
+            //Utils.sendImage(mWidth, mHeight);
         }
 
         void destroy() {
@@ -228,6 +241,11 @@ public class MainActivity extends AppCompatActivity {
             int shader = GLES20.glCreateShader(type);
             GLES20.glShaderSource(shader, shaderCode);
             GLES20.glCompileShader(shader);
+
+            final int[] compileStatus = new int[1];
+            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+            Log.v("shader", "Results of compiling source:[" + compileStatus[0] + "]\n" + shaderCode + "\n:"
+                    + GLES20.glGetShaderInfoLog(shader));
             return shader;
         }
     }

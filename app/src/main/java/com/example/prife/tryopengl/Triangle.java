@@ -20,7 +20,8 @@ public class Triangle {
     private static final int VERTEX_STRIDE = COORD_PER_VERTEX * COORD_SIZE;
 
     private static final float[] COLOR = {
-            0.63671875f, 0.76953125f, 0.22265625f, 1.0f
+            //0.63671875f, 0.76953125f, 0.22265625f, 1.0f
+            1.0f, 0, 0f, 1.0f
     };
 
     private static final String VERTEX_SHADER = "attribute vec4 vPosition;\n"

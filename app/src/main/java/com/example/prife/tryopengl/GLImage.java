@@ -25,7 +25,8 @@ public class GLImage {
     private static final int VERTEX_COUNT = COORD.length / COORD_PER_VERTEX;
     private static final int VERTEX_STRIDE = COORD_PER_VERTEX * COORD_SIZE;
 
-    private static final String VERTEX_SHADER = "uniform mat4 uMVPMatrix;" +
+    private static final String VERTEX_SHADER =
+            "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
             "attribute vec2 a_texCoord;" +
             "varying vec2 v_texCoord;" +
@@ -33,7 +34,8 @@ public class GLImage {
             "  gl_Position = uMVPMatrix * vPosition;" +
             "  v_texCoord = a_texCoord;" +
             "}";
-    private static final String FRAGMENT_SHADER = "precision mediump float;" +
+    private static final String FRAGMENT_SHADER =
+            "precision mediump float;" +
             "varying vec2 v_texCoord;" +
             "uniform sampler2D s_texture;" +
             "void main() {" +

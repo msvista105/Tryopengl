@@ -1,5 +1,6 @@
 package com.example.prife.tryopengl;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean mRendererSet;
     private GLSurfaceView mGlSurfaceView;
+    //private MyGLRenderer mRenderer;
     private MyRenderer mRenderer;
 
     @Override
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         mGlSurfaceView = (GLSurfaceView) findViewById(R.id.mGLSurfaceView);
 
         mGlSurfaceView.setEGLContextClientVersion(2);
+        //mRenderer = new MyGLRenderer(getResources());
         mRenderer = new MyRenderer(getResources());
         mGlSurfaceView.setRenderer(mRenderer);
         mGlSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -61,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
         mRenderer.destroy();
     }
 
-    static class MyRenderer implements GLSurfaceView.Renderer {
-        private static final String VERTEX_SHADER = "uniform mat4 uMVPMatrix;" +
+    class MyRenderer implements GLSurfaceView.Renderer {
+        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.vertex);
+                /*
+                "uniform mat4 uMVPMatrix;" +
                 "attribute vec4 vPosition;" +
                 "attribute vec2 a_texCoord;" +
                 "varying vec2 v_texCoord;" +
@@ -70,20 +75,24 @@ public class MainActivity extends AppCompatActivity {
                 "  gl_Position = uMVPMatrix * vPosition;" +
                 "  v_texCoord = a_texCoord;" +
                 "}";
-        private static final String FRAGMENT_SHADER = "precision mediump float;" +
+                */
+        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.frag);
+                /*
+                "precision mediump float;" +
                 "varying vec2 v_texCoord;" +
                 "uniform sampler2D s_texture;" +
                 "void main() {" +
                 "  gl_FragColor = texture2D( s_texture, v_texCoord );" +
                 "}";
-        private static final float[] VERTEX = {   // in counterclockwise order:
+                */
+        private final float[] VERTEX = {   // in counterclockwise order:
                 1, 1, 0,   // top right
                 -1, 1, 0,  // top left
                 -1, -1, 0, // bottom left
                 1, -1, 0,  // bottom right
         };
-        private static final short[] VERTEX_INDEX = { 0, 1, 2, 2, 0, 3 };
-        private static final float[] UV_TEX_VERTEX = {   // in clockwise order:
+        private final short[] VERTEX_INDEX = { 0, 1, 2, 2, 0, 3 };
+        private final float[] UV_TEX_VERTEX = {   // in clockwise order:
                 1, 0,  // bottom right
                 0, 0,  // bottom left
                 0, 1,  // top left
@@ -109,6 +118,16 @@ public class MainActivity extends AppCompatActivity {
         private int mWidth;
         private int mHeight;
         private int[] mTexNames;
+
+        private final float[] mGaussianWeights = {
+            0.00000067f, 0.00002292f, 0.00019117f, 0.00038771f, 0.00019117f, 0.00002292f, 0.00000067f,
+            0.00002292f, 0.00078634f, 0.00655965f, 0.01330373f, 0.00655965f, 0.00078633f, 0.00002292f,
+            0.00019117f, 0.00655965f, 0.05472157f, 0.11098164f, 0.05472157f, 0.00655965f, 0.00019117f,
+            0.00038771f, 0.01330373f, 0.11098164f, 0.22508352f, 0.11098164f, 0.01330373f, 0.00038771f,
+            0.00019117f, 0.00655965f, 0.05472157f, 0.11098164f, 0.05472157f, 0.00655965f, 0.00019117f,
+            0.00002292f, 0.00078633f, 0.00655965f, 0.01330373f, 0.00655965f, 0.00078633f, 0.00002292f,
+            0.00000067f, 0.00002292f, 0.00019117f, 0.00038771f, 0.00019117f, 0.00002292f, 0.00000067f,
+        };
 
         MyRenderer(Resources resources) {
             mResources = resources;
@@ -205,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glDeleteTextures(1, mTexNames, 0);
         }
 
-        static int loadShader(int type, String shaderCode) {
+        int loadShader(int type, String shaderCode) {
             int shader = GLES20.glCreateShader(type);
             GLES20.glShaderSource(shader, shaderCode);
             GLES20.glCompileShader(shader);

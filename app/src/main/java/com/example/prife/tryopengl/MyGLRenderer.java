@@ -52,11 +52,16 @@ public class MyGLRenderer extends GLBaseRenderer {
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0, 0, 0, 0, 1, 0);
         Matrix.multiplyMM(mMatrixBuffer, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
+        /*
         float angle = 0.09F * (System.currentTimeMillis() % 4000);
         Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, -1);
         Matrix.multiplyMM(mMatrixSecondBuffer, 0, mMatrixBuffer, 0, mRotationMatrix, 0);
 
         mTriangle.draw(mMatrixSecondBuffer);
+        */
+
+        mTriangle.draw(mMatrixBuffer);
+
         //mGLImage.draw(mMatrixSecondBuffer);
 
         /*for (int i = 0; i < 16; i++) {
@@ -74,6 +79,9 @@ public class MyGLRenderer extends GLBaseRenderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
         mGLImage.draw(mtrxProjectionAndView);*/
+    }
+
+    void destroy() {
     }
 
     static int loadShader(int type, String shaderCode) {

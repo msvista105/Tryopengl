@@ -10,12 +10,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            moduleName "ctsopengl_jni"
-            stl "stlport_static"
-            ldLibs "EGL GLESv2 android utils cutils log"
-            abiFilters "armeabi", "x86"
-        }
+//        ndk {
+//            moduleName "ctsopengl_jni"
+//            stl "stlport_static"
+//            ldLibs "EGL GLESv2 android utils cutils log"
+//            abiFilters "armeabi", "x86"
+//        }
     }
     buildTypes {
         release {

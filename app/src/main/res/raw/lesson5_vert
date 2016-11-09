@@ -1,0 +1,17 @@
+//combined projection and view matrix
+uniform mat4 u_ProjView;
+
+//"in" attributes from our SpriteBatch
+attribute vec2 a_Position;
+attribute vec2 a_TexCoordinate;
+//attribute vec4 Color;
+
+//"out" varyings to our fragment shader
+//varying vec4 vColor;
+varying vec2 vTexCoord;
+ 
+void main() {
+	//vColor = Color;
+	vTexCoord = a_TexCoordinate;
+	gl_Position = u_ProjView * vec4(a_Position, 0.0, 1.0);
+}

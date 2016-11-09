@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     class MyRenderer implements GLSurfaceView.Renderer {
         static final boolean LOG = false;
 
-        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.vertex);
+        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_vert);
                 /*
                 "uniform mat4 uMVPMatrix;" +
                 "attribute vec4 vPosition;" +
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 "  v_texCoord = a_texCoord;" +
                 "}";
                 */
-        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.frag);
+        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_frag);
                 /*
                 "precision mediump float;" +
                 "varying vec2 v_texCoord;" +
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         private int mMatrixHandle;
         private int mTexCoordHandle;
         private int mTexSamplerHandle;
+        private int mScaleUniformHandle;
 
         private final Resources mResources;
 
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         private int mHeight;
         private int[] mTexNames;
         private IntBuffer mFreamBufferObjects = IntBuffer.allocate(2);
+        private int[] mTextures = new int[2];
 
         MyRenderer(Resources resources) {
             mResources = resources;
@@ -177,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
             mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
             mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_ProjView");
             mTexSamplerHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
+            mScaleUniformHandle = glGetUniformLocation(mProgram, "u_Scale");
 
             mTexNames = new int[1];
             GLES20.glGenTextures(1, mTexNames, 0);
@@ -198,7 +201,9 @@ public class MainActivity extends AppCompatActivity {
 
             ////////////////////////////////////////////////////////////////////////////////////////
             //Add by prife
-            //glGenFramebuffers(2, mFreamBufferObjects);
+            glGenFramebuffers(1, mFreamBufferObjects);
+            glGenTextures(2, mTextures, 0);
+
         }
 
         @Override
@@ -216,15 +221,28 @@ public class MainActivity extends AppCompatActivity {
                     mUvTexVertexBuffer);
 
             GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
-            GLES20.glUniform1i(mTexSamplerHandle, 0);
+            //GLES20.glUniform1i(mTexSamplerHandle, 0);
 
             ////////////////////////////////////////////////////////////////////////////////////////
             // add by prife
-//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mFreamBufferObjects.get(0), 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0); // Use FBO
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[0], 0);
+            glViewport(0, 0, mWidth, mHeight);
+
+            glActiveTexture (GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mTexNames[0]);
+            glUniform1i(mTexSamplerHandle, 0);
+            glUniform2f(mScaleUniformHandle, 1.0f / mWidth, 0);
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
+
+//            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//            glViewport(0, 0, mWidth, mHeight);
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[1], 0);
 //            glActiveTexture (GL_TEXTURE0);
-//            glBindTexture(GL_TEXTURE_2D, 0); //FIXME
+//            glBindTexture(GL_TEXTURE_2D, mTextures[0]);
 //            glUniform1i(mTexSamplerHandle, 0);
-//            glUniform2f(scaleUniformHandle, 1.0f / mWidth, 0);
+//            glUniform2f(mScaleUniformHandle, 0, 1.0f / mHeight);
             ////////////////////////////////////////////////////////////////////////////////////////
 
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,

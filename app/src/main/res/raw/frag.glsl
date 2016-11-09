@@ -1,6 +1,6 @@
 precision mediump float;
 varying vec2 v_texCoord;
-uniform sampler2D s_texture;
+uniform sampler2D u_Texture;
 void main() {
 float[169] weights;/*13*/
 weights[0] = 0.00000492039284957;
@@ -178,7 +178,7 @@ weights[168] = 0.00000492039284957;
   float vscale = 1.0 / 1080.0;
   for (int i = 0; i < 169/*weights.length()*/; i++) {
     vec2 coords = v_texCoord + vec2((float(i-i/13) - 6.0) * hscale, (float(i/13) - 6.0) * vscale);
-    color += texture2D(s_texture, coords) * weights[i];
+    color += texture2D(u_Texture, coords) * weights[i];
   }
 
   gl_FragColor = color;

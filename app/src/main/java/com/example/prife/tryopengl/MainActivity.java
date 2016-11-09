@@ -17,9 +17,12 @@ import com.github.piasy.tryopengl.R;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static android.opengl.GLES20.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         private int mWidth;
         private int mHeight;
         private int[] mTexNames;
+        private IntBuffer mFreamBufferObjects = IntBuffer.allocate(2);
 
         MyRenderer(Resources resources) {
             mResources = resources;
@@ -169,10 +173,10 @@ public class MainActivity extends AppCompatActivity {
                         + GLES20.glGetProgramInfoLog(mProgram));
             }
 
-            mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-            mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "a_texCoord");
-            mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-            mTexSamplerHandle = GLES20.glGetUniformLocation(mProgram, "s_texture");
+            mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
+            mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
+            mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_ProjView");
+            mTexSamplerHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
 
             mTexNames = new int[1];
             GLES20.glGenTextures(1, mTexNames, 0);
@@ -180,14 +184,10 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.lena);
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames[0]);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
-                    GLES20.GL_LINEAR);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
-                    GLES20.GL_LINEAR);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,
-                    GLES20.GL_REPEAT);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,
-                    GLES20.GL_REPEAT);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
             bitmap.recycle();
 
@@ -195,6 +195,10 @@ public class MainActivity extends AppCompatActivity {
             Matrix.frustumM(mProjectionMatrix, 0, -1, 1, -ratio, ratio, 3, 7);
             Matrix.setLookAtM(mCameraMatrix, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0);
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mCameraMatrix, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            //Add by prife
+            //glGenFramebuffers(2, mFreamBufferObjects);
         }
 
         @Override
@@ -213,6 +217,15 @@ public class MainActivity extends AppCompatActivity {
 
             GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
             GLES20.glUniform1i(mTexSamplerHandle, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////
+            // add by prife
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mFreamBufferObjects.get(0), 0);
+//            glActiveTexture (GL_TEXTURE0);
+//            glBindTexture(GL_TEXTURE_2D, 0); //FIXME
+//            glUniform1i(mTexSamplerHandle, 0);
+//            glUniform2f(scaleUniformHandle, 1.0f / mWidth, 0);
+            ////////////////////////////////////////////////////////////////////////////////////////
 
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);

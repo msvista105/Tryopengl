@@ -1,8 +1,8 @@
-uniform mat4 uMVPMatrix;
-attribute vec4 vPosition;
-attribute vec2 a_texCoord;
+uniform mat4 u_ProjView;
+attribute vec4 a_Position;
+attribute vec2 a_TexCoordinate;
 varying vec2 v_texCoord;
 void main() {
-  gl_Position = uMVPMatrix * vPosition;
-  v_texCoord = a_texCoord;
+  gl_Position = u_ProjView * a_Position;
+  v_texCoord = a_TexCoordinate;
 }

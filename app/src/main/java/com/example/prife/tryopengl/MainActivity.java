@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glAttachShader(mProgram, fragmentShader);
             GLES20.glLinkProgram(mProgram);
 
-
             if (LOG) {
                 final int[] status = new int[1];
                 GLES20.glGetShaderiv(mProgram, GLES20.GL_LINK_STATUS, status, 0);
@@ -194,9 +193,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDrawFrame(GL10 unused) {
-            ////////////////////////////////////////////////////////////////////////////////////////
-            //Add by prife
-
             glGenFramebuffers(1, mFreamBufferObjects);
             glGenTextures(2, mTextures);
 
@@ -216,59 +212,16 @@ public class MainActivity extends AppCompatActivity {
             int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
             if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
             {
-                Log.i("prife", "glCheckFramebufferStatus failed!");
+                Log.i("shader", "glCheckFramebufferStatus failed!");
                 return;
             }
 
-/*
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            GLES20.glUseProgram(mProgram);
-
-            glActiveTexture (GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTexNames.get(0));
-            glUniform1i(mTexSamplerHandle, 0);
-            glUniform2f(mScaleUniformHandle, 1.0f / mWidth, 0);
-
-            GLES20.glEnableVertexAttribArray(mPositionHandle);
-            GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0,
-                    mVertexBuffer);
-
-            GLES20.glEnableVertexAttribArray(mTexCoordHandle);
-            GLES20.glVertexAttribPointer(mTexCoordHandle, 2, GLES20.GL_FLOAT, false, 0,
-                    mUvTexVertexBuffer);
-
-            GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
-            //GLES20.glUniform1i(mTexSamplerHandle, 0);
-
-            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
-                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
-            GLES20.glDisableVertexAttribArray(mPositionHandle);
-            GLES20.glDisableVertexAttribArray(mTexCoordHandle);
-
-
-//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[1], 0);
-//            glActiveTexture (GL_TEXTURE0);
-//            glBindTexture(GL_TEXTURE_2D, mTextures[0]);
-//            glUniform1i(mTexSamplerHandle, 0);
-//            glUniform2f(mScaleUniformHandle, 0, 1.0f / mHeight);
-//            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
-//                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
-//
-//            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//            glActiveTexture (GL_TEXTURE0);
-//            glBindTexture(GL_TEXTURE_2D, mTextures[1]);
-//            glUniform2f(mScaleUniformHandle, 0, 0);
-            ////////////////////////////////////////////////////////////////////////////////////////
-            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-            */
             GLES20.glActiveTexture(GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames.get(0));
 
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 //            GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
             GLES20.glUseProgram(mProgram);
-            //glBindTexture(GL_TEXTURE_2D, mTexNames.get(0));
 
             GLES20.glEnableVertexAttribArray(mPositionHandle);
             GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0,
@@ -306,8 +259,6 @@ public class MainActivity extends AppCompatActivity {
 
             GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
             GLES20.glDeleteTextures(2, mTextures);
-//            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
-//                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 
             //Utils.sendImage(mWidth, mHeight);
         }

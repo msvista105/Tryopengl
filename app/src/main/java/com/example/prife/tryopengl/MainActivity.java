@@ -205,14 +205,16 @@ public class MainActivity extends AppCompatActivity {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             }
 
-//            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
-//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(0), 0);
-//            int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
-//            if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
-//            {
-//                Log.i("prife", "glCheckFramebufferStatus failed!");
-//                return;
-//            }
+            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(0), 0);
+            int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+            if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
+            {
+                Log.i("prife", "glCheckFramebufferStatus failed!");
+                return;
+            }
+
 /*
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -280,9 +282,17 @@ public class MainActivity extends AppCompatActivity {
 
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glUniform2f(mScaleUniformHandle, 0, 0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
+
             GLES20.glDisableVertexAttribArray(mPositionHandle);
             GLES20.glDisableVertexAttribArray(mTexCoordHandle);
-
 
             GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
             //GLES20.glDeleteTextures(2, mTextures);

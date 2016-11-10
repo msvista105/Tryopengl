@@ -283,11 +283,17 @@ public class MainActivity extends AppCompatActivity {
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 
-
+////////////////////////////////////////////////////////////////////////////////////////
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(1), 0);
+            GLES20.glActiveTexture(GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+            glUniform2f(mScaleUniformHandle, 1.0f/mWidth*5, 0);
+            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 ////////////////////////////////////////////////////////////////////////////////////////
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glUniform2f(mScaleUniformHandle, 0, 0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(1));
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 

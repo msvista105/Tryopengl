@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean mRendererSet;
     private GLSurfaceView mGlSurfaceView;
     //private MyGLRenderer mRenderer;
-    private Test7Renderer mRenderer;
+    private GLSurfaceView.Renderer mRenderer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRenderer.destroy();
+        //mRenderer.destroy();
     }
 
     class MyRenderer implements GLSurfaceView.Renderer {
@@ -653,32 +653,32 @@ public class MainActivity extends AppCompatActivity {
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
                 // Do a complete rotation every 10 seconds.
-                long time = SystemClock.uptimeMillis() % 10000L;
-                float angleInDegrees = (360.0f / 10000.0f) * (2 * (int) time);
-
-                GLES20.glUseProgram(mProgramHandle);
-
-                // Set program handles for cube drawing.
-                mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
-                mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVMatrix");
-                mTextureUniformHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Texture");
-                mPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
-                mColorHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Color");
-                mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
-
-                // Set the active texture unit to texture unit 0.
-                GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-
-                // Bind the texture to this unit.
-                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
-
-                // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-                GLES20.glUniform1i(mTextureUniformHandle, 0);
-
-                Matrix.setIdentityM(mModelMatrix, 0);
-                Matrix.translateM(mModelMatrix, 0, 0.0f, -1.0f, -5.0f);
-                Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
-                drawCube();
+//                long time = SystemClock.uptimeMillis() % 10000L;
+//                float angleInDegrees = (360.0f / 10000.0f) * (2 * (int) time);
+//
+//                GLES20.glUseProgram(mProgramHandle);
+//
+//                // Set program handles for cube drawing.
+//                mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
+//                mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVMatrix");
+//                mTextureUniformHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Texture");
+//                mPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Position");
+//                mColorHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Color");
+//                mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
+//
+//                // Set the active texture unit to texture unit 0.
+//                GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+//
+//                // Bind the texture to this unit.
+//                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+//
+//                // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+//                GLES20.glUniform1i(mTextureUniformHandle, 0);
+//
+//                Matrix.setIdentityM(mModelMatrix, 0);
+//                Matrix.translateM(mModelMatrix, 0, 0.0f, -1.0f, -5.0f);
+//                Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
+//                drawCube();
 
                 // render to window system provided framebuffer
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -686,8 +686,8 @@ public class MainActivity extends AppCompatActivity {
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
                 // Do a complete rotation every 10 seconds.
-                time = SystemClock.uptimeMillis() % 10000L;
-                angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+                long time = SystemClock.uptimeMillis() % 10000L;
+                float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
 
                 GLES20.glUseProgram(mProgramHandle);
 
@@ -712,7 +712,7 @@ public class MainActivity extends AppCompatActivity {
                 Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
                 Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
                 drawCube();
-                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+                //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
             }
 
             // cleanup

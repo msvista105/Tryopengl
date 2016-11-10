@@ -192,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
             ////////////////////////////////////////////////////////////////////////////////////////
             //Add by prife
 
-            /*
             glGenFramebuffers(1, mFreamBufferObjects);
             glGenTextures(2, mTextures);
 
@@ -205,14 +204,16 @@ public class MainActivity extends AppCompatActivity {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             }
-            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(0), 0);
-            int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
-            if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
-            {
-                return;
-            }
 
+//            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(0), 0);
+//            int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+//            if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
+//            {
+//                Log.i("prife", "glCheckFramebufferStatus failed!");
+//                return;
+//            }
+/*
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GLES20.glUseProgram(mProgram);
@@ -254,6 +255,9 @@ public class MainActivity extends AppCompatActivity {
             ////////////////////////////////////////////////////////////////////////////////////////
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             */
+            GLES20.glActiveTexture(GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames.get(0));
+
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 //            GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
             GLES20.glUseProgram(mProgram);
@@ -280,9 +284,8 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glDisableVertexAttribArray(mTexCoordHandle);
 
 
-            //GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
-//            GLES20.glDeleteTextures(2, mTextures);
-//            GLES20.glDeleteTextures(1, mTexNames);
+            GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
+            //GLES20.glDeleteTextures(2, mTextures);
 //            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
 //                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 

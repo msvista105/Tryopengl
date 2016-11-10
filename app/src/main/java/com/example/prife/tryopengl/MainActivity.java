@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.github.piasy.tryopengl.R;
 
@@ -26,6 +28,8 @@ import javax.microedition.khronos.opengles.GL10;
 import static android.opengl.GLES20.*;
 
 public class MainActivity extends AppCompatActivity {
+    static float RADIUS = 9.0f;
+    static float RADIUS_MAX = 20.0f;
 
     private boolean mRendererSet;
     private GLSurfaceView mGlSurfaceView;
@@ -46,6 +50,29 @@ public class MainActivity extends AppCompatActivity {
         mGlSurfaceView.setRenderer(mRenderer);
         mGlSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         mRendererSet = true;
+        final TextView mRadiusTextView = (TextView)findViewById(R.id.radius_textview);
+        final SeekBar mRadiusSeeker = (SeekBar)findViewById(R.id.radius_seeker);
+
+        if (mRadiusTextView == null || mRadiusSeeker == null)
+            return;
+
+        mRadiusSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                RADIUS = progress/100.0f * RADIUS_MAX;
+                mRadiusTextView.setText(String.format("%.1f", RADIUS));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -72,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
     class MyRenderer implements GLSurfaceView.Renderer {
         static final boolean LOG = false;
-        static final float RADIUS = 9.0f;
 
 //        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_vert);
 //        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_frag);

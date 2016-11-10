@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     class MyRenderer implements GLSurfaceView.Renderer {
         static final boolean LOG = false;
+        static final float RADIUS = 9.0f;
 
 //        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_vert);
 //        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_frag);
@@ -99,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
         private final float[] mProjectionMatrix = new float[16];
         private final float[] mCameraMatrix = new float[16];
         private final float[] mMVPMatrix = new float[16];
+        private final float[] mMVPIdentiyMatrix = new float[16];
+
 
         private int mProgram;
         private int mPositionHandle;
@@ -185,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
             Matrix.frustumM(mProjectionMatrix, 0, -1, 1, -ratio, ratio, 3, 7);
             Matrix.setLookAtM(mCameraMatrix, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0);
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mCameraMatrix, 0);
+
+            Matrix.setIdentityM(mMVPIdentiyMatrix, 0);
         }
 
         @Override
@@ -274,10 +279,8 @@ public class MainActivity extends AppCompatActivity {
                     mUvTexVertexBuffer);
 
             glUniform1i(mTexSamplerHandle, 0);
-            glUniform2f(mScaleUniformHandle, 0, 1.0f/mHeight*5);
-//            glUniform2f(mScaleUniformHandle, 1.0f/mWidth*5, 0);
-//            glUniform2f(mScaleUniformHandle, 0, 0);
-            GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
+            glUniform2f(mScaleUniformHandle, 0, 1.0f/mHeight*RADIUS);
+            GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPIdentiyMatrix, 0);
             GLES20.glUniform1i(mTexSamplerHandle, 0);
 
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
@@ -287,12 +290,13 @@ public class MainActivity extends AppCompatActivity {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(1), 0);
             GLES20.glActiveTexture(GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
-            glUniform2f(mScaleUniformHandle, 1.0f/mWidth*5, 0);
+            glUniform2f(mScaleUniformHandle, 1.0f/mWidth*RADIUS, 0);
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 ////////////////////////////////////////////////////////////////////////////////////////
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glUniform2f(mScaleUniformHandle, 0, 0);
+            GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(1));
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
@@ -301,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glDisableVertexAttribArray(mTexCoordHandle);
 
             GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
-            //GLES20.glDeleteTextures(2, mTextures);
+            GLES20.glDeleteTextures(2, mTextures);
 //            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
 //                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 
@@ -640,7 +644,7 @@ public class MainActivity extends AppCompatActivity {
                     new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
 
             // Load the texture
-            mTextureDataHandle = ToolsUtil.loadTexture(mActivityContext, R.drawable.lena);
+            mTextureDataHandle = ToolsUtil.loadTexture(mActivityContext, R.drawable.demo);
         }
 
         @Override

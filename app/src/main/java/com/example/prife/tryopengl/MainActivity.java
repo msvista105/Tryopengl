@@ -617,7 +617,7 @@ public class MainActivity extends AppCompatActivity {
             }
             // generate the framebuffer, renderbuffer, and texture object names
             GLES20.glGenFramebuffers(1, framebuffer);
-            GLES20.glGenRenderbuffers(1, depthRenderbuffer);
+//            GLES20.glGenRenderbuffers(1, depthRenderbuffer);
             GLES20.glGenTextures(1, texture);
             // bind texture and load the texture mip-level 0
             // texels are RGB565
@@ -633,17 +633,17 @@ public class MainActivity extends AppCompatActivity {
             // bind renderbuffer and create a 16-bit depth buffer
             // width and height of renderbuffer = width and height of
             // the texture
-            GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, depthRenderbuffer.get(0));
-            GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
-                    texWidth, texHeight);
+//            GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, depthRenderbuffer.get(0));
+//            GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16,
+//                    texWidth, texHeight);
             // bind the framebuffer
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, framebuffer.get(0));
             // specify texture as color attachment
             GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                     GLES20.GL_TEXTURE_2D, texture.get(0), 0);
             // specify depth_renderbufer as depth attachment
-            GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
-                    GLES20.GL_RENDERBUFFER, depthRenderbuffer.get(0));
+//            GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
+//                    GLES20.GL_RENDERBUFFER, depthRenderbuffer.get(0));
             // check for framebuffer complete
             int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
             if(status == GLES20.GL_FRAMEBUFFER_COMPLETE)
@@ -716,7 +716,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // cleanup
-            GLES20.glDeleteRenderbuffers(1, depthRenderbuffer);
+//            GLES20.glDeleteRenderbuffers(1, depthRenderbuffer);
             GLES20.glDeleteFramebuffers(1, framebuffer);
             GLES20.glDeleteTextures(1, texture);
         }

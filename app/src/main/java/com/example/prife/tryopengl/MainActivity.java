@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
         mGlSurfaceView.setEGLContextClientVersion(2);
         //mRenderer = new MyGLRenderer(getResources());
-        mRenderer = new Test7Renderer(this);
+        //mRenderer = new Test7Renderer(this);
+        mRenderer = new MyRenderer(getResources());
         mGlSurfaceView.setRenderer(mRenderer);
         mGlSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         mRendererSet = true;
@@ -75,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
 //        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_vert);
 //        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_frag);
 
-        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.fbo_vert);
-        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.fbo_frag);
+        private final String VERTEX_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_vert);
+        private final String FRAGMENT_SHADER = Utils.readTextFileFromResource(MainActivity.this, R.raw.blur_frag);
         private final float[] VERTEX = {   // in counterclockwise order:
                 1, 1, 0,   // top right
                 -1, 1, 0,  // top left
@@ -110,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
 
         private int mWidth;
         private int mHeight;
-        private int[] mTexNames;
+        private IntBuffer mTexNames = IntBuffer.allocate(1);
         private IntBuffer mFreamBufferObjects = IntBuffer.allocate(2);
-        private int[] mTextures = new int[2];
+        private IntBuffer mTextures = IntBuffer.allocate(2);
 
         MyRenderer(Resources resources) {
             mResources = resources;
@@ -168,12 +169,11 @@ public class MainActivity extends AppCompatActivity {
             mTexSamplerHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
             mScaleUniformHandle = glGetUniformLocation(mProgram, "u_Scale");
 
-            mTexNames = new int[1];
-            GLES20.glGenTextures(1, mTexNames, 0);
+            GLES20.glGenTextures(1, mTexNames);
 
             Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.lena);
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames[0]);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames.get(0));
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
@@ -185,19 +185,42 @@ public class MainActivity extends AppCompatActivity {
             Matrix.frustumM(mProjectionMatrix, 0, -1, 1, -ratio, ratio, 3, 7);
             Matrix.setLookAtM(mCameraMatrix, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0);
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mCameraMatrix, 0);
-
-            ////////////////////////////////////////////////////////////////////////////////////////
-            //Add by prife
-            glGenFramebuffers(1, mFreamBufferObjects);
-            glGenTextures(2, mTextures, 0);
         }
 
         @Override
         public void onDrawFrame(GL10 unused) {
-            glViewport(0, 0, mWidth, mHeight);
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            ////////////////////////////////////////////////////////////////////////////////////////
+            //Add by prife
 
+            /*
+            glGenFramebuffers(1, mFreamBufferObjects);
+            glGenTextures(2, mTextures);
+
+            for (int i = 0; i < 2; i++) {
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(i));
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, mWidth, mHeight,
+                        0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, null);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures.get(0), 0);
+            int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+            if(status != GLES20.GL_FRAMEBUFFER_COMPLETE)
+            {
+                return;
+            }
+
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GLES20.glUseProgram(mProgram);
+
+            glActiveTexture (GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mTexNames.get(0));
+            glUniform1i(mTexSamplerHandle, 0);
+            glUniform2f(mScaleUniformHandle, 1.0f / mWidth, 0);
 
             GLES20.glEnableVertexAttribArray(mPositionHandle);
             GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0,
@@ -210,42 +233,64 @@ public class MainActivity extends AppCompatActivity {
             GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
             //GLES20.glUniform1i(mTexSamplerHandle, 0);
 
-            ////////////////////////////////////////////////////////////////////////////////////////
-            // add by prife
-            glBindFramebuffer(GL_FRAMEBUFFER, mFreamBufferObjects.get(0)); // Use FBO
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[0], 0);
-            glActiveTexture (GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTexNames[0]);
-            glUniform1i(mTexSamplerHandle, 0);
-            glUniform2f(mScaleUniformHandle, 1.0f / mWidth, 0);
             glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
                     GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[1], 0);
-            glActiveTexture (GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTextures[0]);
-            glUniform1i(mTexSamplerHandle, 0);
-            glUniform2f(mScaleUniformHandle, 0, 1.0f / mHeight);
-            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
-                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glActiveTexture (GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTextures[1]);
-            glUniform2f(mScaleUniformHandle, 0, 0);
-            ////////////////////////////////////////////////////////////////////////////////////////
-
-//            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
-//                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
-
             GLES20.glDisableVertexAttribArray(mPositionHandle);
             GLES20.glDisableVertexAttribArray(mTexCoordHandle);
+
+
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextures[1], 0);
+//            glActiveTexture (GL_TEXTURE0);
+//            glBindTexture(GL_TEXTURE_2D, mTextures[0]);
+//            glUniform1i(mTexSamplerHandle, 0);
+//            glUniform2f(mScaleUniformHandle, 0, 1.0f / mHeight);
+//            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+//                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
+//
+//            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//            glActiveTexture (GL_TEXTURE0);
+//            glBindTexture(GL_TEXTURE_2D, mTextures[1]);
+//            glUniform2f(mScaleUniformHandle, 0, 0);
+            ////////////////////////////////////////////////////////////////////////////////////////
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+            */
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+//            GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+            GLES20.glUseProgram(mProgram);
+            //glBindTexture(GL_TEXTURE_2D, mTexNames.get(0));
+
+            GLES20.glEnableVertexAttribArray(mPositionHandle);
+            GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0,
+                    mVertexBuffer);
+
+            GLES20.glEnableVertexAttribArray(mTexCoordHandle);
+            GLES20.glVertexAttribPointer(mTexCoordHandle, 2, GLES20.GL_FLOAT, false, 0,
+                    mUvTexVertexBuffer);
+
+            glUniform1i(mTexSamplerHandle, 0);
+            glUniform2f(mScaleUniformHandle, 0, 1.0f/mHeight*5);
+//            glUniform2f(mScaleUniformHandle, 1.0f/mWidth*5, 0);
+//            glUniform2f(mScaleUniformHandle, 0, 0);
+            GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
+            GLES20.glUniform1i(mTexSamplerHandle, 0);
+
+            glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
+            GLES20.glDisableVertexAttribArray(mPositionHandle);
+            GLES20.glDisableVertexAttribArray(mTexCoordHandle);
+
+
+            //GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
+//            GLES20.glDeleteTextures(2, mTextures);
+//            GLES20.glDeleteTextures(1, mTexNames);
+//            GLES20.glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+//                    GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
 
             //Utils.sendImage(mWidth, mHeight);
         }
 
         void destroy() {
-            GLES20.glDeleteTextures(1, mTexNames, 0);
+
         }
 
         int loadShader(int type, String shaderCode) {

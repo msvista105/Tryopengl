@@ -3,6 +3,25 @@
 #include <dlfcn.h>
 #include "Blur.h"
 #include "log.h"
+#include <GLES/gl.h>
+#include <GLES2/gl2.h>
+
+// Automatically disables scissor test and restores it when destroyed
+class ScopedScissorDisabler {
+    bool scissorEnabled;
+public:
+    ScopedScissorDisabler(bool enabled) : scissorEnabled(enabled) {
+        if(scissorEnabled) {
+            glDisable(GL_SCISSOR_TEST);
+        }
+    }
+    ~ScopedScissorDisabler() {
+        if(scissorEnabled) {
+            glEnable(GL_SCISSOR_TEST);
+        }
+    };
+};
+
 
 LayerBlur::LayerBlur(uint32_t w, uint32_t h)
     : mWidth(w)
@@ -14,7 +33,18 @@ LayerBlur::~LayerBlur() {
 
 status_t LayerBlur::blurTexture(int level, uint32_t inId, size_t inWidth, size_t inHeight,
             uint32_t outId, size_t* outWidth, size_t* outHeight) {
-    return mBlurImpl.blur(level, inId, inWidth, inHeight, outId, outWidth, outHeight);
+    /////
+    // NOTE:
+    //
+    // Scissor test has been turned on by SurfaceFlinger for NON-primary display
+    // We need to turn off the scissor test during our fbo drawing
+    GLboolean isScissorEnabled = false;
+    glGetBooleanv(GL_SCISSOR_TEST, &isScissorEnabled);
+    ScopedScissorDisabler _(isScissorEnabled);
+    //
+    /////
+    int ret = mBlurImpl.blur(level, inId, inWidth, inHeight, outId, outWidth, outHeight);
+    return ret;
 }
 
 // ---------------------------------------------------------------------------
@@ -58,10 +88,12 @@ status_t LayerBlur::BlurImpl::initBlurImpl() {
          //qtiblur::releaseBlurToken(void*)
 
     if (sizeof(size_t) == 4) {
+        LOGI("here, load 32bit so");
         doBlur = (blurFn)dlsym(sLibHandle,
                      "_ZN7qtiblur4blurEPvijjjjPjS1_");
         //qtiblur::blur(void*, int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int*, unsigned int*)
     } else if (sizeof(size_t) == 8) {
+        LOGI("here, load 64bit so");
         doBlur = (blurFn)dlsym(sLibHandle,
                      "_ZN7qtiblur4blurEPvijmmjPmS1_");
         //qtiblur::blur(void*, int, unsigned int, unsigned long, unsigned long, unsigned int, unsigned long*, unsigned long*)

@@ -192,10 +192,21 @@ public class NativeBlurActivity extends AppCompatActivity {
                 Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mCameraMatrix, 0);
 
                 Matrix.setIdentityM(mMVPIdentiyMatrix, 0);
+
+                glGenTextures(1, mTextures);
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+                GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGB, mWidth, mHeight,
+                        0, GLES20.GL_RGB, GLES20.GL_UNSIGNED_SHORT_5_6_5, null);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+                nativeBlurTexture(153, mTexNames.get(0), width, height, mTextures.get(0));
             }
 
             @Override
             public void onDrawFrame(GL10 gl) {
+ /*
                 glGenFramebuffers(1, mFreamBufferObjects);
                 glGenTextures(2, mTextures);
 
@@ -262,6 +273,25 @@ public class NativeBlurActivity extends AppCompatActivity {
 
                 GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
                 GLES20.glDeleteTextures(2, mTextures);
+*/
+                GLES20.glUseProgram(mProgram);
+
+                GLES20.glEnableVertexAttribArray(mPositionHandle);
+                GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0,
+                        mVertexBuffer);
+
+                GLES20.glEnableVertexAttribArray(mTexCoordHandle);
+                GLES20.glVertexAttribPointer(mTexCoordHandle, 2, GLES20.GL_FLOAT, false, 0,
+                        mUvTexVertexBuffer);
+
+                glUniform1i(mTexSamplerHandle, 0);
+                glUniform2f(mScaleUniformHandle, 0, 0);
+
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
+                glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,
+                        GLES20.GL_UNSIGNED_SHORT, mVertexIndexBuffer);
             }
         };
         mGlSurfaceView.setRenderer(mRenderer);
@@ -286,7 +316,7 @@ public class NativeBlurActivity extends AppCompatActivity {
     public native String nativeHelloString(String str);
 
 
-    public native int nativeBlurTexture(int level, int inId, int inWidth, int inHeight, int outId);
+    public static native int nativeBlurTexture(int level, int inId, int inWidth, int inHeight, int outId);
 
     // Used to load the 'native-lib' library on application startup.
     static {

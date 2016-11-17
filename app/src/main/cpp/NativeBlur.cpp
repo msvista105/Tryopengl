@@ -26,7 +26,9 @@ int blurTexture(JNIEnv *env, jclass jclazz,
     if (g_blur == NULL) {
         g_blur = new LayerBlur(inWidth, inheight);
     }
-    g_blur->blurTexture(level, inId, inWidth, inheight, outId, &outWidth, &outHeight);
+    int ret = g_blur->blurTexture(level, inId, inWidth, inheight, outId, &outWidth, &outHeight);
+    LOGI("blurTexture level[%d], inId[%d], w[%d] h[%d] outid[%d], ret=%d outw[%d], outh[%d]",
+         level, inId, inWidth, inheight, outId, ret, outWidth, outHeight);
     return 0;
 }
 

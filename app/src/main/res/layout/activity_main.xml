@@ -10,7 +10,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:layout_gravity="center_vertical|center_horizontal"
         android:orientation="vertical"
-        tools:context="com.github.piasy.tryopengl.com.example.prife.tryopengl.MainActivity"
+        tools:context="com.example.prife.tryopengl.MainActivity"
         >
 
     <android.opengl.GLSurfaceView

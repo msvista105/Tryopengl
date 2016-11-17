@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TryOpenGL</string>
+    <string name="title_activity_native_blur">NativeBlurActivity</string>
 </resources>

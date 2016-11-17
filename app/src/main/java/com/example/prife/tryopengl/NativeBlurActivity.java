@@ -4,6 +4,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -16,6 +17,9 @@ public class NativeBlurActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_native_blur);
+
+        final TextView mRadiusTextView = (TextView)findViewById(R.id.native_radius_textview);
+        mRadiusTextView.setText(nativeHelloString("java args"));
 
         mGlSurfaceView = (GLSurfaceView) findViewById(R.id.native_GLSurfaceView);
         mGlSurfaceView.setEGLContextClientVersion(2);
@@ -36,5 +40,17 @@ public class NativeBlurActivity extends AppCompatActivity {
             }
         };
         mGlSurfaceView.setRenderer(mRenderer);
+    }
+
+
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    public native String nativeHelloString(String str);
+
+    // Used to load the 'native-lib' library on application startup.
+    static {
+        System.loadLibrary("native-lib");
     }
 }

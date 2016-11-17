@@ -285,6 +285,9 @@ public class NativeBlurActivity extends AppCompatActivity {
      */
     public native String nativeHelloString(String str);
 
+
+    public native int nativeBlurTexture(int level, int inId, int inWidth, int inHeight, int outId);
+
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");

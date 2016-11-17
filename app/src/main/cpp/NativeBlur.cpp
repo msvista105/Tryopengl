@@ -1,23 +1,17 @@
 //
 // Created by prife on 16-11-17.
 //
+#define LOG_TAG "NativeBlur"
+
 #include <jni.h>
-#include <android/log.h>
 #include <string>
-
-#define TAG "NativeBlur"
-#define JAVA_CLASS "com/example/prife/tryopengl/NativeBlurActivity"
-#define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
-
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,  TAG, __VA_ARGS__)
-#define LOGDT(T, ...) __android_log_print(ANDROID_LOG_DEBUG,  T, __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  TAG, __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN,  TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
-
+#include "helper.h"
+#include "log.h"
+#include "Blur.h"
 
 static JavaVM *g_vm;
 static jclass g_jclass;
+static LayerBlur* g_blur;
 
 jstring helloString(JNIEnv *env, jclass jclazz, jstring str) {
     const char *strFromJava = env->GetStringUTFChars(str, NULL);
@@ -25,8 +19,20 @@ jstring helloString(JNIEnv *env, jclass jclazz, jstring str) {
     return env->NewStringUTF(hello.c_str());
 }
 
+int blurTexture(JNIEnv *env, jclass jclazz,
+        jint level, jint inId, jint inWidth, jint inheight, jint outId) {
+    size_t outWidth = 0;
+    size_t outHeight = 0;
+    if (g_blur == NULL) {
+        g_blur = new LayerBlur(inWidth, inheight);
+    }
+    g_blur->blurTexture(level, inId, inWidth, inheight, outId, &outWidth, &outHeight);
+    return 0;
+}
+
 static JNINativeMethod gMethods[] = {
     {"nativeHelloString", "(Ljava/lang/String;)Ljava/lang/String;",  (void *)helloString},
+    {"nativeBlurTexture", "(IIIII)I",  (void *)blurTexture},
 };
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -46,6 +52,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     g_vm = vm;
     g_jclass = (jclass) env->NewGlobalRef(javaClass);
     env->DeleteLocalRef(javaClass);
+
     return JNI_VERSION_1_6;
 }
 

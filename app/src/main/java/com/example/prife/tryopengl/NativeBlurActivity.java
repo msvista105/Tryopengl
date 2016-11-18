@@ -36,8 +36,8 @@ import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniform2f;
 
 public class NativeBlurActivity extends AppCompatActivity {
-    static float RADIUS = 9.0f;
-    static float RADIUS_MAX = 20.0f;
+    static float RADIUS = 100.0f;
+    static float RADIUS_MAX = 255.0f;
 
     GLSurfaceView mGlSurfaceView;
     GLSurfaceView.Renderer mRenderer;
@@ -201,7 +201,6 @@ public class NativeBlurActivity extends AppCompatActivity {
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
                 GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-                nativeBlurTexture(153, mTexNames.get(0), width, height, mTextures.get(0));
             }
 
             @Override
@@ -274,6 +273,8 @@ public class NativeBlurActivity extends AppCompatActivity {
                 GLES20.glDeleteFramebuffers(1, mFreamBufferObjects);
                 GLES20.glDeleteTextures(2, mTextures);
 */
+                nativeBlurTexture((int)RADIUS, mTexNames.get(0), mWidth, mHeight, mTextures.get(0));
+
                 GLES20.glUseProgram(mProgram);
 
                 GLES20.glEnableVertexAttribArray(mPositionHandle);

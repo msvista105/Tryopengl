@@ -4,13 +4,13 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-add_library(uiblur SHARED
-            src/main/cpp/ProgramCache.cpp
-            src/main/cpp/qtiblur.cpp
-            src/main/cpp/Program.cpp
-            )
-
-target_link_libraries(uiblur GLESv2 log)
+#add_library(uiblur SHARED
+#            src/main/cpp/ProgramCache.cpp
+#            src/main/cpp/qtiblur.cpp
+#            src/main/cpp/Program.cpp
+#            )
+#
+#target_link_libraries(uiblur GLESv2 log)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -30,15 +30,15 @@ add_library( # Sets the name of the library.
              src/main/cpp/Blur.cpp
              )
 
-# add_library( uiblur SHARED IMPORTED )
-# set_target_properties( # Specifies the target library.
-#                       uiblur
-#
-#                       # Specifies the parameter you want to define.
-#                       PROPERTIES IMPORTED_LOCATION
-#
-#                       # Provides the path to the library you want to import.
-#                       ${CMAKE_SOURCE_DIR}/src/main/libs/${ANDROID_ABI}/libuiblur.so )
+add_library( uiblur SHARED IMPORTED )
+set_target_properties( # Specifies the target library.
+                      uiblur
+
+                      # Specifies the parameter you want to define.
+                      PROPERTIES IMPORTED_LOCATION
+
+                      # Provides the path to the library you want to import.
+                      ${CMAKE_SOURCE_DIR}/src/main/libs/${ANDROID_ABI}/libuiblur.so )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by

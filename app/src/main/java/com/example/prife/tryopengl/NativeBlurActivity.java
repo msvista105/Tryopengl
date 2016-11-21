@@ -23,10 +23,13 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_COLOR_ATTACHMENT0;
+import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FRAMEBUFFER;
 import static android.opengl.GLES20.GL_TEXTURE0;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.glBindFramebuffer;
+import static android.opengl.GLES20.glClear;
+import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDrawElements;
 import static android.opengl.GLES20.glFramebufferTexture2D;
 import static android.opengl.GLES20.glGenFramebuffers;
@@ -289,6 +292,8 @@ public class NativeBlurActivity extends AppCompatActivity {
                 glUniform2f(mScaleUniformHandle, 0, 0);
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glClear(GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+                glClearColor(0,0,0,1);
                 GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMVPMatrix, 0);
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0));
                 glDrawElements(GLES20.GL_TRIANGLES, VERTEX_INDEX.length,

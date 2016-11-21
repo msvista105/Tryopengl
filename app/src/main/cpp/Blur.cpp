@@ -6,6 +6,8 @@
 #include <GLES/gl.h>
 #include <GLES2/gl2.h>
 
+using namespace android;
+
 // Automatically disables scissor test and restores it when destroyed
 class ScopedScissorDisabler {
     bool scissorEnabled;

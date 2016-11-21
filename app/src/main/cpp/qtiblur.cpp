@@ -33,6 +33,6 @@ int qtiblur::blur(void* obj, int level,
     }
 
     return thiz->mProgramCache->blurTexure(
-            level, inId, inWidth, inHeight, outId, outWidth, outHeight);
+            level, inId, inWidth, inHeight, outId, outWidth, outHeight) == 0 ? 1 : 0;
 }
 

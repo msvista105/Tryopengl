@@ -42,6 +42,7 @@ static const char* FragmentShaderStr =
 "    color += texture2D(u_Texture, coords) * weights[i];\n"
 "  }\n"
 "  gl_FragColor = color;\n"
+"  gl_FragColor.a = 1.0;\n"
 "}\n";
 
 static const float VERTEX[] = {   // in counterclockwise order:
@@ -118,8 +119,9 @@ int ProgramCache::setupTextures() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0,
-            GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0,
+    //        GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     return 0;
 }
 
@@ -167,7 +169,16 @@ int ProgramCache::blurTexure(int level, GLuint inTexture, int inW, int inH,
     ensureTextures(inW, inH);
     float xscale = getBlurXScale(level);
     float yscale = getBlurYScale(level);
-    //TODO: ensure outTexture exsit?
+
+    //FIXME: ensure inTexture
+    glBindTexture(GL_TEXTURE_2D,  inTexture);//mTexture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //FIXME: ensure outTexture exsit?
+    glBindTexture(GL_TEXTURE_2D, outTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     if (outW != NULL) *outW= inW;
     if (outH != NULL) *outH= inH;

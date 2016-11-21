@@ -3,8 +3,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
-//#include "error.h"
+
+#ifdef BUILD_IN_AOSP
 #include <utils/Errors.h>
+using namespace android;
+#else
+#include "error.h"
+#endif
 
 class LayerBlur
 {
@@ -13,7 +18,7 @@ public:
     LayerBlur(uint32_t w, uint32_t h);
     virtual ~LayerBlur();
 
-    android::status_t blurTexture(int level, uint32_t inId, size_t inWidth, size_t inheight,
+    status_t blurTexture(int level, uint32_t inId, size_t inWidth, size_t inheight,
             uint32_t outId, size_t* outWidth, size_t* outHeight);
 private:
     class BlurImpl {
@@ -22,11 +27,11 @@ private:
         BlurImpl();
         ~BlurImpl();
 
-        android::status_t blur(int level, uint32_t inId, size_t inWidth, size_t inheight,
+        status_t blur(int level, uint32_t inId, size_t inWidth, size_t inheight,
                 uint32_t outId, size_t* outWidth, size_t* outHeight);
 
     protected:
-        static android::status_t initBlurImpl();
+        static status_t initBlurImpl();
         static void closeBlurImpl();
         static void* sLibHandle;
         static bool sUnsupported;

@@ -6,7 +6,9 @@
 #include <GLES/gl.h>
 #include <GLES2/gl2.h>
 
+#ifdef BUILD_IN_AOSP
 using namespace android;
+#endif
 
 // Automatically disables scissor test and restores it when destroyed
 class ScopedScissorDisabler {
